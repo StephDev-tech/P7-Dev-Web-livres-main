@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import axios from 'axios';
 import { API_ROUTES } from '../utils/constants';
 
@@ -60,6 +61,7 @@ export async function getBook(id) {
     book.id = book._id;
     return book;
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error(err);
     return null;
   }
@@ -73,6 +75,7 @@ export async function getBestRatedBooks() {
     });
     return formatBooks(response.data);
   } catch (e) {
+    // eslint-disable-next-line no-console
     console.error(e);
     return [];
   }
@@ -177,6 +180,7 @@ export async function updateBook(data, id) {
     });
     return newBook;
   } catch (err) {
+    // eslint-disable-next-line no-console
     console.error(err);
     return { error: true, message: err.message };
   }

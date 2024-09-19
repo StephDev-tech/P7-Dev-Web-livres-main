@@ -1,14 +1,17 @@
-const express = require("express");
-const router = express.Router();
-const auth = require('../middleware/auth')
-const multer = require('../middleware/multer-config')
-const bookCtrl = require("../controllers/books");
+import { Router } from "express";
+const router = Router();
+import auth from '../middleware/auth.js';
+import multer from '../middleware/multer-config.js';
+import {compressAndResizeImage} from '../middleware/sharp.js'
+import { getAllBooks, getOneBook, createBook, modifyBook, deleteBook, rateBook, bestRatedBooks} from "../controllers/books.js";
 
-router.get("/", bookCtrl.getAllBooks);
-router.get("/:id", bookCtrl.getOneBook);
-router.post("/", auth, multer, bookCtrl.createBook);
-router.put("/:id", auth, multer, bookCtrl.modifyBook);
-router.delete("/:id", auth, bookCtrl.deleteBook);
+router.get("/", getAllBooks);
+router.get("/bestrating", bestRatedBooks)
+router.get("/:id", getOneBook);
+router.post("/", auth, multer, compressAndResizeImage, createBook);
+router.post("/:id/rating", auth, rateBook)
+router.put("/:id", auth, multer, compressAndResizeImage, modifyBook);
+router.delete("/:id", auth, multer, deleteBook);
 
 
-module.exports = router;
+export default router;

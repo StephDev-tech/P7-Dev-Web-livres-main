@@ -1,13 +1,16 @@
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken')
-const User = require('../models/User')
+import { hash as _hash, compare } from 'bcrypt';
 
-require('dotenv').config(); 
+import pkg from 'jsonwebtoken';
+const { sign } = pkg; 
+import User from '../models/User.js';  
+import dotenv from 'dotenv';
+dotenv.config();
+ 
 
-const jwtSecret = process.env.JWT_SECRET
-
-exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
+ // eslint-disable-next-line no-undef
+ const jwtSecret = process.env.JWT_SECRET
+const signup = (req, res) => {
+    _hash(req.body.password, 10)
     .then(hash => {
         const user = new User({
             email: req.body.email,
@@ -19,21 +22,20 @@ exports.signup = (req, res, next) => {
     })
     .catch(error => res.status(500).json({ error }))
 }
-
-exports.login = (req, res, next) => {
+const login = (req, res) => {
     User.findOne({email: req.body.email})
     .then(user => {
         if (user === null) {
             res.status(401).json({ message: 'Paire identifiant/mot de passe incorrecte'})
         } else {
-            bcrypt.compare(req.body.password, user.password)
+            compare(req.body.password, user.password)
             .then(valid => {
                 if(!valid) {
                     res.status(401).json({ message: 'Paire identifiant/mot de passe incorrecte'})
                 } else {
                     res.status(200).json({
                         userId: user._id,
-                        token: jwt.sign(
+                        token: sign(
                             { userId: user._id },
                             jwtSecret,
                             { expiresIn: '24h'} 
@@ -50,3 +52,5 @@ exports.login = (req, res, next) => {
         res.status(500).json({ error })
     })
 }
+
+export{signup, login}

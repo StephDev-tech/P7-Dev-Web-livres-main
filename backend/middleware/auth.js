@@ -1,13 +1,17 @@
-const jwt = require('jsonwebtoken')
+//import { verify } from 'jsonwebtoken'; MODIFIER CAR ERREUR EN CONSOLE
+import pkg from 'jsonwebtoken';
+const { verify } = pkg;
+import dotenv from 'dotenv'; 
 
-require('dotenv').config(); 
+dotenv.config();
 
-const jwtSecret = process.env.JWT_SECRET
+ // eslint-disable-next-line no-undef
+ const jwtSecret = process.env.JWT_SECRET
 
-module.exports = (req, res, next) => {
+export default (req, res, next) => {
     try{
         const token = req.headers.authorization.split(' ')[1]
-        const decodedToken = jwt.verify(token, jwtSecret)
+        const decodedToken = verify(token, jwtSecret)
         const userId = decodedToken.userId
         req.auth = {
             userId: userId

@@ -1,9 +1,8 @@
-const http = require('http');
-const app = require('./app');
+import { createServer } from 'http';
+import app from './app.js';
 
 const normalizePort = val => {
   const port = parseInt(val, 10);
-
   if (isNaN(port)) {
     return val;
   }
@@ -12,8 +11,10 @@ const normalizePort = val => {
   }
   return false;
 };
-const port = normalizePort(process.env.PORT || '4000');
-app.set('port', port);
+
+// Déterminer le port à utiliser
+ // eslint-disable-next-line no-undef
+ const port = normalizePort(process.env.PORT || '4000');
 
 const errorHandler = error => {
   if (error.syscall !== 'listen') {
@@ -24,18 +25,20 @@ const errorHandler = error => {
   switch (error.code) {
     case 'EACCES':
       console.error(bind + ' requires elevated privileges.');
-      process.exit(1);
+             // eslint-disable-next-line no-undef
+             process.exit(1);
       break;
     case 'EADDRINUSE':
       console.error(bind + ' is already in use.');
-      process.exit(1);
+             // eslint-disable-next-line no-undef
+             process.exit(1);
       break;
     default:
       throw error;
   }
 };
 
-const server = http.createServer(app);
+const server = createServer(app);
 
 server.on('error', errorHandler);
 server.on('listening', () => {

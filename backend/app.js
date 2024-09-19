@@ -1,41 +1,51 @@
-const express = require("express");
+
+import express from 'express';
+import { connect } from 'mongoose';
+import dotenv from 'dotenv';
+import booksRoutes from './routes/books.js';
+import userRoutes from './routes/user.js';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
+
+// Charger les variables d'environnement
+dotenv.config();
+
+// Déterminer le répertoire courant
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
-const bodyParser = require("body-parser");
-const mongoose = require("mongoose");
-const booksRoutes = require("./routes/books");
-const userRoutes = require('./routes/user')
-const path = require('path')
-require('dotenv').config(); 
 
-const uri = process.env.MONGODB_URI
+// Connexion à MongoDB
+ // eslint-disable-next-line no-undef
+ const uri = process.env.MONGODB_URI;
 
-mongoose
-	.connect(
-		uri,
-		{ useNewUrlParser: true, useUnifiedTopology: true }
-	)
-	.then(() => console.log("Connexion à MongoDB réussie !"))
-	.catch(() => console.log("Connexion à MongoDB échouée !"));
+connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("Connexion à MongoDB réussie !"))
+  .catch(() => console.log("Connexion à MongoDB échouée !"));
 
-app.use(express.json());
+// Middleware pour parser le JSON
+app.use(express.json()); // Utilise directement json() de express
 
+// Middleware pour la gestion des CORS
 app.use((req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", "*");
-	res.setHeader(
-		"Access-Control-Allow-Headers",
-		"Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
-	);
-	res.setHeader(
-		"Access-Control-Allow-Methods",
-		"GET, POST, PUT, DELETE, PATCH, OPTIONS"
-	);
-	next();
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Origin, X-Requested-With, Content, Accept, Content-Type, Authorization"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET, POST, PUT, DELETE, PATCH, OPTIONS"
+  );
+  next();
 });
 
-app.use(bodyParser.json());
-
+// Routes
 app.use("/api/books", booksRoutes);
-app.use('/api/auth', userRoutes)
-app.use('/images', express.static((path.join(__dirname, 'images'))))
+app.use("/api/auth", userRoutes);
 
-module.exports = app;
+// Middleware pour servir des fichiers statiques
+app.use("/images", express.static(join(__dirname, "images")));
+
+export default app;
