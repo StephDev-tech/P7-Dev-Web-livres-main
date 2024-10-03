@@ -6,6 +6,7 @@ import booksRoutes from './routes/books.js';
 import userRoutes from './routes/user.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import rateLimit from 'express-rate-limit';
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -40,6 +41,14 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limiter chaque IP à 100 requêtes 
+});
+
+app.use(limiter);// Applique le rate-limiting globalement à toutes les routes
+
 
 // Routes
 app.use("/api/books", booksRoutes);
